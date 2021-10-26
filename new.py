@@ -19,6 +19,8 @@ if __name__ == "__main__":
         #set authorisation based on token and key
         auth = OAuthHandler("VSIB59ufJlbnErA106Z9C24VK", "OIGv5ohnTdnlM91pubPHjt52YMSvrobHMicBPtdkz8h83gT5hX")
         auth.set_access_token("1051212950432833536-Z2KtGhRjhd7svXFQi8UyDZq0zKp0VE", "vGQee7KZ9peaSIxkpY4AQqYOj4gp3j6qEkf4a69blPRM6")
+
+        api = API(auth)
         
         #max number of calls
         if number == max:
