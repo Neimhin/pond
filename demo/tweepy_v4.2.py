@@ -5,7 +5,7 @@ import time
 
 toDate = datetime.fromisoformat('2020-01-01')
 
-cork_coords = "point_radius:[51.88532757350978 -8.467862308148838 25mi]"
+cork_coords = "point_radius:[51.88532757350978 -8.467862308148838 400km]"
 cork_coords_api1 = "51.88532757350978,-8.467862308148838,25mi"
 #(year=datetime.year(2020),month=datetime.month(1),day=datetime.day(1),hour=datetime.hour(23), minute=datetime.minute(59), second=datetime.second(59))
 print(toDate.utcoffset())
