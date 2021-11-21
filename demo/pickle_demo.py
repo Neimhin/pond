@@ -32,7 +32,7 @@ print(f'tweepy version {tweepy.__version__}')
 tweepy.RateLimitError = tweepy.TooManyRequests
 
 def load_api_object():
-    return pickle.load(open('neimhin_api_object.pickle','rb'))
+    return pickle.load(open('oisin_api_object.pickle','rb'))
 
 api = load_api_object() 
 
@@ -88,8 +88,6 @@ def dates():
     covid_df = pd.read_csv("ireland_covid_data.csv")
     for _,r in covid_df.iterrows():
         yield(extract_date(r))
-
-def to_today(d):
 
 if __name__ == "__main__":
     fromDate = "202002280000"
