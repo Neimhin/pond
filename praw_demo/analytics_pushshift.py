@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 from datetime import datetime as dt
+from pprint import pprint as pp
 
 today = dt.today()
 
@@ -21,8 +22,14 @@ def date(unix_time):
 def working_datetime(d):
     return dt(year=d.year,month=d.month,day=d.day)
 
+def to_dict(d,comments_df):
+    return {'number_of_comments': len(comments_df.index), 'date': d}
+df = pd.DataFrame()
+total_number_of_comments = 0
+
 n = 0
 d = date(days_ago(n))
+number_of_valid_dates = 0
 while working_datetime(d) > first_day:
     d = date(days_ago(n))
     n += 1
@@ -38,5 +45,12 @@ while working_datetime(d) > first_day:
         print(e)
         continue
     print('WORKING...')
+    df = df.append(to_dict(d,comments_df),ignore_index=True)
+    number_of_valid_dates += 1
+    total_number_of_comments += len(comments_df.index)
 
+df.head(20)
+df.to_csv('r_coronavirus_analytics/number_of_comments.csv')
+print('TOTAL NUMBER OF COMMENTS:\t', total_number_of_comments)
+print('AVERAGE NUMBER OF COMMENTS:\t', total_number_of_comments/number_of_valid_dates)
 print('FINISHED')
