@@ -56,6 +56,6 @@ if main():
     print(sent.shape)
     print(tfidf.ndim)
     print(sent.ndim)
-    X = np.append(sent,tfidf)
+    X = np.append(sent,tfidf.todense())
     X = np.reshape(X, (tfidf.shape[0], tfidf.shape[1]+sent.shape[1]))
     print(X.shape)
