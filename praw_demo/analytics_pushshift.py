@@ -5,7 +5,7 @@ from pprint import pprint as pp
 
 today = dt.today()
 
-first_day  = dt(year=2020,month=11,day=20)
+first_day = dt(year=2020,month=1,day=1)
 
 def days_ago(n):
     return int((today - datetime.timedelta(days=n)).timestamp())
