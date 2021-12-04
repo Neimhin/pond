@@ -17,7 +17,6 @@ def filenames_earliest_to_latest():
             yield n
         d += timedelta(days=1)
 
-
 def documents_earliest_to_latest():
     document_order = []
     for filename in filenames_earliest_to_latest():
@@ -29,7 +28,12 @@ def documents_earliest_to_latest():
 number_of_documents = len(list(os.listdir('r/cleaned/')))
 
 def build():
-    vectorizer = TfidfVectorizer(input='filename', ngram_range=(1,2), max_df = 0.75, min_df=30,stop_words='english')
+    vectorizer = TfidfVectorizer(
+            input='filename',
+            ngram_range=(1,1),
+            max_df = 0.75,
+            min_df=int(0.1*number_of_documents),
+            stop_words='english')
     X = vectorizer.fit_transform(filenames_earliest_to_latest())
     pickle.dump(vectorizer, open('tfidf_all.pickle','wb'))
     pickle.dump(X, open('tf_idf_weighted_document_term_matrix.pickle','wb'))
@@ -39,5 +43,5 @@ def read():
     return (pickle.load(open('tf_idf_weighted_document_term_matrix.pickle','rb')), pickle.load(open('tfidf_all.pickle','rb')))
 
 if __name__ == '__main__':
-    (X,vectorizer) = read()
+    (X,vectorizer) = build()
     print(X.shape)
