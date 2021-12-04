@@ -84,9 +84,8 @@ def with_history(days_back):
 
 def without_history():
     sent = sentiment_ndarray()
-    tfidf = tfidf_matrix()
-    X = np.append(sent,tfidf.todense())
-    X = np.reshape(X, (tfidf.shape[0], tfidf.shape[1]+sent.shape[1]))
+    tfidf = tfidf_matrix().todense()
+    X = np.concatenate((sent,np.asarray(tfidf)),axis=1)
     return X
 
 def reproduction_rate_graph():
@@ -103,10 +102,36 @@ def reproduction_rate_graph():
     ax.set_xlabel('date (YYYY-MM)')
     ax.set_ylabel('reproduction rate (r)')
     plt.savefig('figure/reproduction_rate.png',dpi=300)
-
+    
 def main():
     return (__name__ == "__main__")
 
 if main():
     X = with_history(7)
     print(X.shape)
+
+# return np.array with x[:,x.shape[1]-1] being the target value y
+def label_data(dataset,n):
+    zeros = np.zeros((6,dataset.shape[1]), dtype=int)
+    dataset_zeros = np.append(zeros,dataset,axis=0)
+    dataset_zeros = np.append(dataset_zeros,np.zeros((dataset_zeros.shape[0],8*6+1), dtype=int),axis=1)
+    index = n
+    while index < dataset_zeros.shape[0]:
+        ixgrid = np.ix_([i for i in range(index-6,index)], [j for j in range(8)])
+        history = dataset_zeros[ixgrid]
+        history = history.flatten()
+        history_index= 0
+        for value in history:
+            dataset_zeros[index,dataset.shape[1]+history_index] = value
+            history_index += 1
+        if n+index < dataset_zeros.shape[0]:
+            dataset_zeros[index,dataset.shape[1]+history_index] = dataset_zeros[n+index,0]
+        else:
+            dataset_zeros[index,dataset.shape[1]+history_index] = 0
+        index += 1
+    return dataset_zeros[n:]
+
+if main():
+    #reproduction_rate_graph()
+    X = without_history()
+    x_label = label_data(X,14)
