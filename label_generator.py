@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
 
 document_order_df = pd.read_csv('document_order.csv')
 
@@ -111,8 +112,221 @@ def make_n_day_prediction_dataset(dataset,n):
         index += 1
     return dataset_zeros[6:]
 
+def parameter_opt_for_lasso(data):
+    Ci_range = [0.01, 0.5, 0.1, 0.5, 1, 5, 10, 25, 50, 75, 100]
+    mean_error = []
+    std_error = []
+    std_error_r2 = []
+    mean_parameter_lasso = []
+    r2 = []
+    X = data[:,:data.shape[1]-1]
+    y = data[:,data.shape[1]-1]
+    for Ci in Ci_range:
+        from sklearn.linear_model import Lasso
+        model = Lasso(alpha=1/(2 * Ci))
+        temp = []
+        from sklearn.model_selection import KFold
+        kf = KFold(n_splits=5)
+        for train, test in kf.split(X):
+            model.fit(X[train], y[train])
+            ypred = model.predict(X[test])
+            from sklearn.metrics import r2_score
+            if abs(r2_score(y[test],ypred)) <= 1: 
+                r2.append(r2_score(y[test],ypred))
+            else:
+                r2.append(0)
+            from sklearn.metrics import mean_squared_error
+            temp.append(mean_squared_error(y[test], ypred))
+        mean_error.append(np.array(temp).mean())
+        std_error.append(np.array(temp).std())
+        std_error_r2.append(np.array(r2).std())
+        mean_parameter_lasso.append(np.array(r2).mean())
+    plt.errorbar(Ci_range, mean_error, yerr=std_error)
+    plt.xlabel("C")
+    plt.ylabel("Mean square error")
+    plt.title(f"C vs MSE of Lasso Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+    plt.errorbar(Ci_range, mean_parameter_lasso, yerr=std_error_r2)
+    plt.xlabel("C")
+    plt.ylabel("R2")
+    plt.title(f"C vs R2 Score of Lasso Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+
+def parameter_opt_for_ridge(data):
+    Ci_range = [0.01, 0.5, 0.1, 0.5, 1, 5, 10, 25, 50, 75, 100]
+    mean_error = []
+    std_error = []
+    std_error_r2 = []
+    mean_parameter_ridge = []
+    r2 = []
+    X = data[:,:data.shape[1]-1]
+    y = data[:,data.shape[1]-1]
+    for Ci in Ci_range:
+        from sklearn.linear_model import Ridge
+        model = Ridge(alpha=1/(2 * Ci))
+        temp = []
+        from sklearn.model_selection import KFold
+        kf = KFold(n_splits=5)
+        for train, test in kf.split(X):
+            model.fit(X[train], y[train])
+            ypred = model.predict(X[test])
+            from sklearn.metrics import r2_score
+            if abs(r2_score(y[test],ypred)) <= 1: 
+                r2.append(r2_score(y[test],ypred))
+            else:
+                r2.append(0)
+            from sklearn.metrics import mean_squared_error
+            temp.append(mean_squared_error(y[test], ypred))
+        mean_error.append(np.array(temp).mean())
+        std_error.append(np.array(temp).std())
+        std_error_r2.append(np.array(r2).std())
+        mean_parameter_ridge.append(np.array(r2).mean())
+    plt.errorbar(Ci_range, mean_error, yerr=std_error)
+    plt.xlabel("C")
+    plt.ylabel("Mean square error")
+    plt.title(f"C vs MSE of Ridge Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+    plt.errorbar(Ci_range, mean_parameter_ridge, yerr=std_error_r2)
+    plt.xlabel("C")
+    plt.ylabel("R2")
+    plt.title(f"C vs R2 Score of Ridge Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+    plt.errorbar(Ci_range[:6], mean_parameter_ridge[:6], yerr=std_error_r2[:6])
+    plt.xlabel("C")
+    plt.ylabel("R2")
+    plt.title(f"C vs R2 Score of Ridge Model")
+    plt.xlim((0.1, Ci_range[6]))
+    plt.show()
+
+def parameter_opt_for_neural_net(data):
+    Ci_range = [1, 5, 10, 25, 50, 75, 100]
+    mean_error = []
+    std_error = []
+    std_error_r2 = []
+    mean_parameter_nn = []
+    r2 = []
+    X = data[:,:data.shape[1]-1]
+    y = data[:,data.shape[1]-1]
+    for Ci in Ci_range:
+        from sklearn.neural_network import MLPRegressor
+        model = MLPRegressor(alpha=1/(2 * Ci),early_stopping=True)
+        temp = []
+        from sklearn.model_selection import KFold
+        kf = KFold(n_splits=3)
+        for train, test in kf.split(X):
+            model.fit(X[train], y[train])
+            ypred = model.predict(X[test])
+            from sklearn.metrics import r2_score
+            if abs(r2_score(y[test],ypred)) <= 1: 
+                r2.append(r2_score(y[test],ypred))
+            else:
+                r2.append(0)
+            print(Ci)
+            from sklearn.metrics import mean_squared_error
+            temp.append(mean_squared_error(y[test], ypred))
+        mean_error.append(np.array(temp).mean())
+        std_error.append(np.array(temp).std())
+        std_error_r2.append(np.array(r2).std())
+        mean_parameter_nn.append(np.array(r2).mean())
+    plt.errorbar(Ci_range, mean_error, yerr=std_error)
+    plt.xlabel("C")
+    plt.ylabel("Mean square error")
+    plt.title(f"C vs MSE of NN Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+    plt.errorbar(Ci_range, mean_parameter_nn, yerr=std_error_r2)
+    plt.xlabel("C")
+    plt.ylabel("R2")
+    plt.title(f"C vs R2 Score of NN Model")
+    plt.xlim((0.1, 100))
+    plt.show()
+
+def parameter_opt_for_knn(data):
+    N_range = [1, 3, 5, 7, 9, 11, 13,int(math.sqrt(data.shape[0]))]
+    mean_error = []
+    std_error = []
+    std_error_r2 = []
+    mean_parameter_nn = []
+    r2 = []
+    X = data[:,:data.shape[1]-1]
+    y = data[:,data.shape[1]-1]
+    for N in N_range:
+        from sklearn.neighbors import KNeighborsRegressor
+        model = KNeighborsRegressor(n_neighbors=N)
+        temp = []
+        from sklearn.model_selection import KFold
+        kf = KFold(n_splits=5)
+        for train, test in kf.split(X):
+            model.fit(X[train], y[train])
+            ypred = model.predict(X[test])
+            from sklearn.metrics import r2_score
+            if abs(r2_score(y[test],ypred)) <= 1: 
+                r2.append(r2_score(y[test],ypred))
+            else:
+                r2.append(0)
+            from sklearn.metrics import mean_squared_error
+            temp.append(mean_squared_error(y[test], ypred))
+        mean_error.append(np.array(temp).mean())
+        std_error.append(np.array(temp).std())
+        std_error_r2.append(np.array(r2).std())
+        mean_parameter_nn.append(np.array(r2).mean())
+    plt.errorbar(N_range, mean_error, yerr=std_error)
+    plt.xlabel("C")
+    plt.ylabel("Mean square error")
+    plt.title(f"C vs MSE of KNN Model")
+    plt.xlim((0.1, N_range[len(N_range)-1]))
+    plt.show()
+    plt.errorbar(N_range, mean_parameter_nn, yerr=std_error_r2)
+    plt.xlabel("C")
+    plt.ylabel("R2")
+    plt.title(f"C vs R2 Score of KNN Model")
+    plt.xlim((0.1, N_range[len(N_range)-1]))
+    plt.show()
+
 if main():
     #reproduction_rate_graph()
     X = concatenate_data()
     X = make_n_day_prediction_dataset(X,14)
-    
+    parameter_opt_for_lasso(X)
+    #lasso C = [25-75] on MSE, amd [75+] on R2
+    #C = 75
+    parameter_opt_for_ridge(X)
+    #ridge C = [25-] on MSE, amd [10-] on R2
+    #C= 10
+    #parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N=2
+
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,7)
+    parameter_opt_for_lasso(X)
+    #lasso C = [10+] on MSE, amd [75+] on R2
+    #C = 100
+    parameter_opt_for_ridge(X)
+    #ridge C = [any] on MSE, and [10+] on R2
+    #C= 25
+    #parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N = 5
+
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,3)
+    parameter_opt_for_lasso(X)
+    #lasso C = [5-25] on MSE, amd [75+] on R2
+    #C = 75
+    parameter_opt_for_ridge(X)
+    #ridge C = [any] on MSE, amd [5-] on R2
+    #C= 5
+    #parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N = 23
