@@ -287,46 +287,59 @@ def parameter_opt_for_knn(data):
     plt.xlim((0.1, N_range[len(N_range)-1]))
     plt.show()
 
+def baseline_1(data,t):
+    r =  data[:,0] - data[:,data.shape[1]-49]
+    r_index= 0
+    while r_index < r.shape[0]:
+        if r[r_index] > 2:
+            r[r_index] = 0
+        r_index += 1
+    return data[:,0] + r * t
+
+def baseline_2(data,_):
+    return data[:,0]
+
 if main():
     #reproduction_rate_graph()
-    X = concatenate_data()
-    X = make_n_day_prediction_dataset(X,14)
-    parameter_opt_for_lasso(X)
+    #X = concatenate_data()
+    #X = make_n_day_prediction_dataset(X,14)
+    #parameter_opt_for_lasso(X)
     #lasso C = [25-75] on MSE, amd [75+] on R2
     #C = 75
-    parameter_opt_for_ridge(X)
+    #parameter_opt_for_ridge(X)
     #ridge C = [25-] on MSE, amd [10-] on R2
     #C= 10
     #parameter_opt_for_neural_net(X)
     #NN C = [25-] on MSE, amd [10-] on R2
-    parameter_opt_for_knn(X)
+    #parameter_opt_for_knn(X)
     #N > 2 on MSE, and N < 5 on R2
     #N=2
 
-    X = concatenate_data()
-    X = make_n_day_prediction_dataset(X,7)
-    parameter_opt_for_lasso(X)
+    #X = concatenate_data()
+    #X = make_n_day_prediction_dataset(X,7)
+    #parameter_opt_for_lasso(X)
     #lasso C = [10+] on MSE, amd [75+] on R2
     #C = 100
-    parameter_opt_for_ridge(X)
+    #parameter_opt_for_ridge(X)
     #ridge C = [any] on MSE, and [10+] on R2
     #C= 25
     #parameter_opt_for_neural_net(X)
     #NN C = [25-] on MSE, amd [10-] on R2
-    parameter_opt_for_knn(X)
+    #parameter_opt_for_knn(X)
     #N > 2 on MSE, and N < 5 on R2
     #N = 5
 
     X = concatenate_data()
-    X = make_n_day_prediction_dataset(X,3)
-    parameter_opt_for_lasso(X)
+    X = make_n_day_prediction_dataset(X,7)
+    #parameter_opt_for_lasso(X)
     #lasso C = [5-25] on MSE, amd [75+] on R2
     #C = 75
-    parameter_opt_for_ridge(X)
+    #parameter_opt_for_ridge(X)
     #ridge C = [any] on MSE, amd [5-] on R2
     #C= 5
     #parameter_opt_for_neural_net(X)
     #NN C = [25-] on MSE, amd [10-] on R2
-    parameter_opt_for_knn(X)
+    #parameter_opt_for_knn(X)
     #N > 2 on MSE, and N < 5 on R2
     #N = 23
+    
