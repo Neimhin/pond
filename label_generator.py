@@ -63,7 +63,7 @@ def sentiment(n,sent):
 def main():
     return __name__ == "__main__"
 
-def without_history():
+def concatenate_data():
     sent = sentiment_ndarray()
     tfidf = tfidf_matrix().todense()
     X = np.concatenate((sent,np.asarray(tfidf)),axis=1)
@@ -91,7 +91,7 @@ def reproduction_rate_graph():
     plt.savefig('figure/reproduction_rate.png',dpi=300)
 
 # return np.array with x[:,x.shape[1]-1] being the target value y
-def label_data(dataset,n):
+def make_n_day_prediction_dataset(dataset,n):
     zeros = np.zeros((6,dataset.shape[1]), dtype=int)
     dataset_zeros = np.append(zeros,dataset,axis=0)
     dataset_zeros = np.append(dataset_zeros,np.zeros((dataset_zeros.shape[0],8*6+1), dtype=int),axis=1)
@@ -107,13 +107,12 @@ def label_data(dataset,n):
         if n+index < dataset_zeros.shape[0]:
             dataset_zeros[index,dataset.shape[1]+history_index] = dataset_zeros[n+index,0]
         else:
-            dataset_zeros[index,dataset.shape[1]+history_index] = 0
+            dataset_zeros[index,dataset.shape[1]+history_index] = dataset_zeros[index,0]
         index += 1
     return dataset_zeros[6:]
 
 if main():
     #reproduction_rate_graph()
-    X = without_history()
-    print(X[0])
-    x_label = label_data(X,14)
-    print(x_label[0])
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,14)
+    
