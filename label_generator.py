@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 
+document_order_df = pd.read_csv('document_order.csv')
 
 
 def load_features():
@@ -30,8 +31,6 @@ def filenames_earliest_to_latest():
 
 def document_order():
     return pd.read_csv('document_order.csv')
-
-document_order_df = document_order()
 
 def tfidf_matrix():
     return pickle.load(open('tf_idf_weighted_document_term_matrix.pickle','rb'))
@@ -59,28 +58,10 @@ def sentiment(n,sent):
     if (n < 0):
         return [0,0,0,0, 0,0,0,0]
     else:
-        return sent[n]
+        sent[n]
 
-def with_history(days_back):
-    sent = sentiment_ndarray()
-    tfidf = tfidf_matrix()
-    with_history = np.zeros(shape=(len(document_order_df['0']), days_back*sent.shape[1] + tfidf.shape[1]), dtype=np.float64)
-    for i in range(with_history.shape[0]):
-        stride = sent.shape[1]
-        for n in range(days_back):
-            if i-n >= 0:
-                with_history[i,stride*n:stride*(n+1)] = sentiment(i-n,sent)
-        with_history[i,stride*(days_back):with_history.shape[1]] = tfidf[i].todense()
-    return with_history
-    ## MANUAL VALIDATION
-    ## for i in range(days_back):
-    ##     print(i,"\t",with_history[0, i*sent.shape[1]:(i+1)*sent.shape[1]])
-    ## print(sent[0])
-
-    ## print(with_history[0, 0:(days_back+1)*sent.shape[1]])
-    ## for i in range(sent.shape[1]):
-    ##     print(tfidf[0,i])
-
+def main():
+    return __name__ == "__main__"
 
 def without_history():
     sent = sentiment_ndarray()
@@ -88,12 +69,18 @@ def without_history():
     X = np.concatenate((sent,np.asarray(tfidf)),axis=1)
     return X
 
+def with_history(days):
+    sent = sentiment_ndarray()
+    for row in sent:
+        print(row)
+    return None
+
 def reproduction_rate_graph():
     covid = world_covid_df()
     dates = []
     rs = []
     for d,r in zip(covid['date'], covid['reproduction_rate']):
-        dates.append(d)
+        dates.append(d)#.timestamp())
         rs.append(r)
     fig = plt.figure(figsize=(7,7))
     ax  = fig.add_subplot(111)
@@ -102,20 +89,13 @@ def reproduction_rate_graph():
     ax.set_xlabel('date (YYYY-MM)')
     ax.set_ylabel('reproduction rate (r)')
     plt.savefig('figure/reproduction_rate.png',dpi=300)
-    
-def main():
-    return (__name__ == "__main__")
-
-if main():
-    X = with_history(7)
-    print(X.shape)
 
 # return np.array with x[:,x.shape[1]-1] being the target value y
 def label_data(dataset,n):
     zeros = np.zeros((6,dataset.shape[1]), dtype=int)
     dataset_zeros = np.append(zeros,dataset,axis=0)
     dataset_zeros = np.append(dataset_zeros,np.zeros((dataset_zeros.shape[0],8*6+1), dtype=int),axis=1)
-    index = n
+    index = 6
     while index < dataset_zeros.shape[0]:
         ixgrid = np.ix_([i for i in range(index-6,index)], [j for j in range(8)])
         history = dataset_zeros[ixgrid]
@@ -129,9 +109,11 @@ def label_data(dataset,n):
         else:
             dataset_zeros[index,dataset.shape[1]+history_index] = 0
         index += 1
-    return dataset_zeros[n:]
+    return dataset_zeros[6:]
 
 if main():
     #reproduction_rate_graph()
     X = without_history()
+    print(X[0])
     x_label = label_data(X,14)
+    print(x_label[0])
