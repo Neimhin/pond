@@ -356,7 +356,19 @@ if main():
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
     ##N = 23
-    
+
+    X = concatenate_data()
+    pos_data = X[:,6]
+    neg_data = X[:,7]
+    days = np.arange(X.shape[0])
+    plt.plot(days, neg_data,'ro--',label="Compound Negative Sentiment",linewidth=1.5,alpha=0.5) 
+    plt.plot(days, pos_data,'go--',label="Compound Positive Sentiment",linewidth=1.5,alpha=0.5) 
+    plt.xlabel("day")
+    plt.ylabel("Compound Sentiment")
+    plt.title(f"Compound Sentiment across Days")
+    plt.xlim((0, X.shape[0]))
+    plt.legend()
+    plt.show()
     days_ahead = [3,7,10,14]
     c_lasso = [75,100,50,75]
     c_ridge = [10,25,25,10]
@@ -417,5 +429,27 @@ if main():
     print(f"las {lasso_r2}")
     print(f"rdg {ridge_r2}")
     print(f"knn {knn_r2}")
+    plt.plot(days_ahead, b1_r2,color="blue", marker='o',label="exponential baseline") 
+    plt.plot(days_ahead, b2_r2,color="green", marker='o',label="mean baseline") 
+    plt.plot(days_ahead, lasso_r2,color="red", marker='o',label="lasso regression") 
+    plt.plot(days_ahead, ridge_r2,color="orange", marker='o',label="ridge regression") 
+    plt.plot(days_ahead, knn_r2,color="purple", marker='o',label="knn regression") 
+    plt.xlabel("n, days into future prediction")
+    plt.ylabel("R^2 Score")
+    plt.title(f"Model Predictions for day n versus R^2 Score")
+    plt.xlim((3, days_ahead[len(days_ahead)-1]))
+    plt.legend()
+    plt.show()
+    plt.plot(days_ahead, b1_mse,color="blue", marker='o',label="exponential baseline") 
+    plt.plot(days_ahead, b2_mse,color="green", marker='o',label="mean baseline") 
+    plt.plot(days_ahead, lasso_mse,color="red", marker='o',label="lasso regression") 
+    plt.plot(days_ahead, ridge_mse,color="orange", marker='o',label="ridge regression") 
+    plt.plot(days_ahead, knn_mse,color="purple", marker='o',label="knn regression") 
+    plt.xlabel("n, days into future prediction")
+    plt.ylabel("MSE")
+    plt.title(f"Model Predictions for day n versus MSE")
+    plt.xlim((3, days_ahead[len(days_ahead)-1]))
+    plt.legend()
+    plt.show()
 
 
