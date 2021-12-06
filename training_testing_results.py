@@ -309,12 +309,11 @@ if main():
     #parameter_opt_for_ridge(X)
     ##ridge C = [25-] on MSE, amd [10-] on R2
     ##C= 10
-    #parameter_opt_for_neural_net(X)
+    ##parameter_opt_for_neural_net(X)
     ##NN C = [25-] on MSE, amd [10-] on R2
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
     ##N=2
-
     #X = concatenate_data()
     #X = make_n_day_prediction_dataset(X,10)
     #parameter_opt_for_lasso(X)
@@ -328,7 +327,6 @@ if main():
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
     ##N=5
-
     #X = concatenate_data()
     #X = make_n_day_prediction_dataset(X,7)
     #parameter_opt_for_lasso(X)
@@ -337,12 +335,11 @@ if main():
     #parameter_opt_for_ridge(X)
     ##ridge C = [any] on MSE, and [10+] on R2
     ##C= 25
-    #parameter_opt_for_neural_net(X)
+    ##parameter_opt_for_neural_net(X)
     ##NN C = [25-] on MSE, amd [10-] on R2
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
     ##N = 5
-
     #X = concatenate_data()
     #X = make_n_day_prediction_dataset(X,3)
     #parameter_opt_for_lasso(X)
@@ -351,7 +348,7 @@ if main():
     #parameter_opt_for_ridge(X)
     ##ridge C = [any] on MSE, amd [5-] on R2
     ##C= 5
-    #parameter_opt_for_neural_net(X)
+    ##parameter_opt_for_neural_net(X)
     ##NN C = [25-] on MSE, amd [10-] on R2
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
@@ -386,7 +383,7 @@ if main():
     lasso_coefficients = []
     ridge_coefficients = []
     knn_coefficients = []
-    for index in [0,1,2,3]:
+    for index in range(4):
         X = concatenate_data()
         X = make_n_day_prediction_dataset(X,days_ahead[index])
         X_only = X[:,:X.shape[1]-1]
