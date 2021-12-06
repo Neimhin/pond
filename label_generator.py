@@ -93,7 +93,7 @@ def reproduction_rate_graph():
 
 # return np.array with x[:,x.shape[1]-1] being the target value y
 def make_n_day_prediction_dataset(dataset,n):
-    zeros = np.zeros((6,dataset.shape[1]), dtype=int)
+    zeros = np.zeros((6,dataset.shape[1]), dtype=np.float64)
     dataset_zeros = np.append(zeros,dataset,axis=0)
     dataset_zeros = np.append(dataset_zeros,np.zeros((dataset_zeros.shape[0],8*6+1), dtype=int),axis=1)
     index = 6
@@ -155,7 +155,7 @@ def parameter_opt_for_lasso(data):
     plt.show()
 
 def parameter_opt_for_ridge(data):
-    Ci_range = [0.01, 0.5, 0.1, 0.5, 1, 5, 10, 25, 50, 75, 100]
+    Ci_range = 10**np.linspace(-4,4) #[0.01, 0.5, 0.1, 1, 5, 10, 25, 50, 75, 100]
     mean_error = []
     std_error = []
     std_error_r2 = []
@@ -254,6 +254,8 @@ def parameter_opt_for_knn(data):
     r2 = []
     X = data[:,:data.shape[1]-1]
     y = data[:,data.shape[1]-1]
+    max_r2 = -float('inf')
+    min_mse = float('inf')
     for N in N_range:
         from sklearn.neighbors import KNeighborsRegressor
         model = KNeighborsRegressor(n_neighbors=N)
@@ -264,8 +266,9 @@ def parameter_opt_for_knn(data):
             model.fit(X[train], y[train])
             ypred = model.predict(X[test])
             from sklearn.metrics import r2_score
-            if abs(r2_score(y[test],ypred)) <= 1: 
-                r2.append(r2_score(y[test],ypred))
+            score = r2_score(y[test],ypred)
+            if abs(score) <= 1: 
+                r2.append(score)
             else:
                 r2.append(0)
             from sklearn.metrics import mean_squared_error
@@ -300,64 +303,64 @@ def baseline_2(data,_):
     return data[:,0]
 
 if main():
-    #reproduction_rate_graph()
-    #X = concatenate_data()
-    #X = make_n_day_prediction_dataset(X,14)
-    #parameter_opt_for_lasso(X)
-    ##lasso C = [25-75] on MSE, amd [75+] on R2
-    ##C = 75
-    #parameter_opt_for_ridge(X)
-    ##ridge C = [25-] on MSE, amd [10-] on R2
-    ##C= 10
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,14)
+    parameter_opt_for_lasso(X)
+    #lasso C = [25-75] on MSE, amd [75+] on R2
+    #C = 75
+    parameter_opt_for_ridge(X)
+    #ridge C = [25-] on MSE, amd [10-] on R2
+    #C= 10
+    parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N=2
+
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,10)
+    parameter_opt_for_lasso(X)
+    #lasso C = [50-] on MSE, amd [75+] on R2
+    #C = 50
+    parameter_opt_for_ridge(X)
+    #ridge C = [25-] on MSE, amd [10-] on R2
+    #C= 25
     #parameter_opt_for_neural_net(X)
-    ##NN C = [25-] on MSE, amd [10-] on R2
-    #parameter_opt_for_knn(X)
-    ##N > 2 on MSE, and N < 5 on R2
-    ##N=2
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N=5
 
-    #X = concatenate_data()
-    #X = make_n_day_prediction_dataset(X,10)
-    #parameter_opt_for_lasso(X)
-    ##lasso C = [50-] on MSE, amd [75+] on R2
-    ##C = 50
-    #parameter_opt_for_ridge(X)
-    ##ridge C = [25-] on MSE, amd [10-] on R2
-    ##C= 25
-    ##parameter_opt_for_neural_net(X)
-    ##NN C = [25-] on MSE, amd [10-] on R2
-    #parameter_opt_for_knn(X)
-    ##N > 2 on MSE, and N < 5 on R2
-    ##N=5
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,7)
+    parameter_opt_for_lasso(X)
+    #lasso C = [10+] on MSE, amd [75+] on R2
+    #C = 100
+    parameter_opt_for_ridge(X)
+    #ridge C = [any] on MSE, and [10+] on R2
+    #C= 25
+    parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N = 5
 
-    #X = concatenate_data()
-    #X = make_n_day_prediction_dataset(X,7)
-    #parameter_opt_for_lasso(X)
-    ##lasso C = [10+] on MSE, amd [75+] on R2
-    ##C = 100
-    #parameter_opt_for_ridge(X)
-    ##ridge C = [any] on MSE, and [10+] on R2
-    ##C= 25
-    #parameter_opt_for_neural_net(X)
-    ##NN C = [25-] on MSE, amd [10-] on R2
-    #parameter_opt_for_knn(X)
-    ##N > 2 on MSE, and N < 5 on R2
-    ##N = 5
+    X = concatenate_data()
+    X = make_n_day_prediction_dataset(X,3)
+    parameter_opt_for_lasso(X)
+    #lasso C = [5-25] on MSE, amd [75+] on R2
+    #C = 75
+    parameter_opt_for_ridge(X)
+    #ridge C = [any] on MSE, amd [5-] on R2
+    #C= 5
+    parameter_opt_for_neural_net(X)
+    #NN C = [25-] on MSE, amd [10-] on R2
+    parameter_opt_for_knn(X)
+    #N > 2 on MSE, and N < 5 on R2
+    #N = 23
 
-    #X = concatenate_data()
-    #X = make_n_day_prediction_dataset(X,3)
-    #parameter_opt_for_lasso(X)
-    ##lasso C = [5-25] on MSE, amd [75+] on R2
-    ##C = 75
-    #parameter_opt_for_ridge(X)
-    ##ridge C = [any] on MSE, amd [5-] on R2
-    ##C= 5
-    #parameter_opt_for_neural_net(X)
-    ##NN C = [25-] on MSE, amd [10-] on R2
-    #parameter_opt_for_knn(X)
-    ##N > 2 on MSE, and N < 5 on R2
-    ##N = 23
-
-    days_ahead = [3,7,10,14]
+def mse_and_r_squared():
+    days_ahead = [i * 2 for i in range(3,10)]
     c_lasso = [75,100,50,75]
     c_ridge = [10,25,25,10]
     n_knn = [23,5,5,3]
@@ -371,19 +374,21 @@ if main():
     knn_r2 = []
     b1_r2 = []
     b2_r2 = []
-    for index in [0,1,2,3]:
+    for day_ahead in days_ahead:
         X = concatenate_data()
-        X = make_n_day_prediction_dataset(X,days_ahead[index])
+        X = make_n_day_prediction_dataset(X,day_ahead)
         X_only = X[:,:X.shape[1]-1]
         y_only = X[:,X.shape[1]-1]
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X_only, y_only, test_size=0.2)
+        print(X_train.shape)
+        print(y_train.shape)
         from sklearn.linear_model import Lasso
-        lasso_model = Lasso(alpha=1/(2 * c_lasso[index]))
+        lasso_model = Lasso(alpha=1/(2 * c_lasso[0]))
         from sklearn.linear_model import Ridge
-        ridge_model = Ridge(alpha=1/(2 * c_ridge[index]))
+        ridge_model = Ridge(alpha=1/(2 * c_ridge[0]))
         from sklearn.neighbors import KNeighborsRegressor
-        knn_model = KNeighborsRegressor(n_neighbors=n_knn[index])
+        knn_model = KNeighborsRegressor(n_neighbors=n_knn[0])
         lasso_model.fit(X_train, y_train)
         ridge_model.fit(X_train, y_train)
         knn_model.fit(X_train, y_train)
@@ -398,10 +403,10 @@ if main():
         ridge_r2.append(r2_score(y_test, ridge_ypred))
         knn_mse.append(mean_squared_error(y_test, knn_ypred))
         knn_r2.append(r2_score(y_test, knn_ypred))
-        b1_mse.append(mean_squared_error(y_test, baseline_1(X_test,days_ahead[index])))
-        b1_r2.append(r2_score(y_test, baseline_1(X_test,days_ahead[index])))
-        b2_mse.append(mean_squared_error(y_test, baseline_2(X_test,days_ahead[index])))
-        b2_r2.append(r2_score(y_test, baseline_2(X_test,days_ahead[index])))
+        b1_mse.append(mean_squared_error(y_test, baseline_1(X_test,day_ahead)))
+        b1_r2.append(r2_score(y_test, baseline_1(X_test,day_ahead)))
+        b2_mse.append(mean_squared_error(y_test, baseline_2(X_test,day_ahead)))
+        b2_r2.append(r2_score(y_test, baseline_2(X_test,day_ahead)))
     print("MSE:")
     print(f"day {days_ahead}")
     print(f"bl1 {b1_mse}")
@@ -417,5 +422,3 @@ if main():
     print(f"las {lasso_r2}")
     print(f"rdg {ridge_r2}")
     print(f"knn {knn_r2}")
-
-
