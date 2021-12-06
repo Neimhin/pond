@@ -297,7 +297,7 @@ def baseline_1(data,t):
     return data[:,0] + r * t
 
 def baseline_2(data,_):
-    return data[:,0]
+    return np.ones(data.shape[0], dtype=int) * np.mean(data[:,0])
 
 if main():
     #reproduction_rate_graph()
@@ -356,7 +356,7 @@ if main():
     #parameter_opt_for_knn(X)
     ##N > 2 on MSE, and N < 5 on R2
     ##N = 23
-
+    
     days_ahead = [3,7,10,14]
     c_lasso = [75,100,50,75]
     c_ridge = [10,25,25,10]
@@ -377,7 +377,7 @@ if main():
         X_only = X[:,:X.shape[1]-1]
         y_only = X[:,X.shape[1]-1]
         from sklearn.model_selection import train_test_split
-        X_train, X_test, y_train, y_test = train_test_split(X_only, y_only, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(X_only, y_only, test_size=0.2,random_state=3)
         from sklearn.linear_model import Lasso
         lasso_model = Lasso(alpha=1/(2 * c_lasso[index]))
         from sklearn.linear_model import Ridge
