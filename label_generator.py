@@ -419,6 +419,24 @@ if main():
         b2_r2.append(r2_score(y_test, baseline_2(X_test,days_ahead[index])))
         lasso_coefficients.append(np.transpose(lasso_model.coef_))
         ridge_coefficients.append(np.transpose(ridge_model.coef_))
+
+        lasso_ypred_all = lasso_model.predict(X_only)
+        ridge_ypred_all = ridge_model.predict(X_only)
+        knn_ypred_all = knn_model.predict(X_only)
+        print(y_only.shape)
+        print(lasso_ypred_all.shape)
+        print(ridge_ypred_all.shape)
+        print(knn_ypred_all.shape)
+        plt.plot(np.arange(y_only.shape[0]),y_only,color="black",label="true values")
+        plt.plot(np.arange(y_only.shape[0]),lasso_ypred_all,color="blue",label="lasso predicted values")
+        plt.plot(np.arange(y_only.shape[0]),ridge_ypred_all,color="red",label="ridge predicted values")
+        plt.plot(np.arange(y_only.shape[0]),knn_ypred_all,color="green",label="knn predicted values")
+        plt.xlabel("Day")
+        plt.ylabel("New Cases")
+        plt.title(f"n= {days_ahead[index]} Days Ahead Prediction daily")
+        plt.legend()
+        plt.show() 
+
     
     for i in range(len(lasso_coefficients)):
         plt.plot(np.arange(lasso_coefficients[i].shape[0]), lasso_coefficients[i],color="blue",label="lasso parameters") 
@@ -433,7 +451,7 @@ if main():
         plt.title(f"Parameter Values")
         plt.legend()
         plt.show() 
-        
+
     print("MSE:")
     print(f"day {days_ahead}")
     print(f"bl1 {b1_mse}")
