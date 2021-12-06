@@ -383,6 +383,9 @@ if main():
     knn_r2 = []
     b1_r2 = []
     b2_r2 = []
+    lasso_coefficients = []
+    ridge_coefficients = []
+    knn_coefficients = []
     for index in [0,1,2,3]:
         X = concatenate_data()
         X = make_n_day_prediction_dataset(X,days_ahead[index])
@@ -414,6 +417,23 @@ if main():
         b1_r2.append(r2_score(y_test, baseline_1(X_test,days_ahead[index])))
         b2_mse.append(mean_squared_error(y_test, baseline_2(X_test,days_ahead[index])))
         b2_r2.append(r2_score(y_test, baseline_2(X_test,days_ahead[index])))
+        lasso_coefficients.append(np.transpose(lasso_model.coef_))
+        ridge_coefficients.append(np.transpose(ridge_model.coef_))
+    
+    for i in range(len(lasso_coefficients)):
+        plt.plot(np.arange(lasso_coefficients[i].shape[0]), lasso_coefficients[i],color="blue",label="lasso parameters") 
+        plt.xlabel("Parameter")
+        plt.ylabel("Value")
+        plt.title(f"Parameter Values")
+        plt.legend()
+        plt.show()
+        plt.plot(np.arange(lasso_coefficients[i].shape[0]), ridge_coefficients[i],color="green",label="ridge parameters") 
+        plt.xlabel("Parameter")
+        plt.ylabel("Value")
+        plt.title(f"Parameter Values")
+        plt.legend()
+        plt.show() 
+        
     print("MSE:")
     print(f"day {days_ahead}")
     print(f"bl1 {b1_mse}")
